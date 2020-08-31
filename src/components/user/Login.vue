@@ -3,8 +3,8 @@
     <div class="site-content__wrapper">
       <div class="site-content">
         <div class="brand-info">
-          <h2 class="brand-info__text">PEING</h2>
-          <p class="brand-info__intro">peing提问箱登录</p>
+          <h2 class="brand-info__text">MUSIC</h2>
+          <p class="brand-info__intro">music登录</p>
         </div>
         <div class="login-main">
           <h3 class="login-title">登录</h3>
@@ -16,27 +16,17 @@
             status-icon
           >
             <el-form-item prop="username">
-              <el-input v-model="dataForm.username" placeholder="用户名/邮箱"></el-input>
+              <el-input v-model="dataForm.username" placeholder="用户名"></el-input>
             </el-form-item>
             <el-form-item prop="password">
               <el-input v-model="dataForm.password" type="password" placeholder="密码"></el-input>
             </el-form-item>
-            <el-form-item prop="code">
-              <el-row :gutter="20">
-                <el-col :span="14">
-                  <el-input v-model="dataForm.code" placeholder="验证码"></el-input>
-                </el-col>
-                <el-col :span="10" class="login-captcha">
-                  <img :src="captchaPath" @click="getCaptcha()" alt />
-                </el-col>
-              </el-row>
-            </el-form-item>
             <el-form-item>
               <el-button class="login-btn-submit" type="primary" @click="dataFormSubmit()">登录</el-button>
             </el-form-item>
+            <el-link type="primary" @click="toSignupPage">注册</el-link>
+            <el-link type="primary" @click="toForgetPage">忘记密码</el-link>
           </el-form>
-          <el-link type="primary" @click="toSignupPage">注册</el-link>
-          <el-link type="primary" @click="toForgetPage">忘记密码</el-link>
         </div>
       </div>
     </div>
@@ -44,70 +34,50 @@
 </template>
 
 <script>
-import { getUUID,aesMinEncrypt } from "@/utils";
 export default {
   data() {
     return {
       dataForm: {
         username: "",
         password: "",
-        uuid: "111",
-        code: ""
       },
       dataRule: {
         username: [
-          {required: true, message: "帐号不能为空", trigger: "blur"},
-          { min: 3,trigger:"用户名或邮箱错误"}
+          { required: true, message: "帐号不能为空", trigger: "blur" },
         ],
         password: [
-          {required: true, message: "密码不能为空", trigger: "blur"},
-          {min: 3,max: 16,message: "密码在6-16位之间", trigger: "blur"}
+          { required: true, message: "密码不能为空", trigger: "blur" },
         ],
-        code: [
-          {required: true, message: "验证码不能为空", trigger: "blur"}
-        ]
       },
-      captchaPath: ""
     };
   },
-  created() {
-    this.getCaptcha();
-  },
+
   methods: {
     // 提交表单
     dataFormSubmit() {
-        this.$refs.dataFormRef.validate(async valid=>{
-            if(!valid) return
-            this.dataForm.password = aesMinEncrypt(this.dataForm.password)
-            const data = await this.$http.post('/auth/login',this.dataForm)
-            // console.log(res)
-            if(data.data.status !== 200){
-                this.getCaptcha()
-                return this.$message.error(data.data.message)
-            }
-            // console.log(data)
-            window.localStorage.setItem('token',data.headers.authorization)
-            this.$message.success('登录成功')
-            
-            this.$router.push('/')
-        })
-    },
-    // 获取验证码
-    getCaptcha() {
-      this.dataForm.uuid = getUUID();
-    //   this.captchaPath = this.$http.adornUrl(
-    //     `/auth/captcha.jpg?uuid=${this.dataForm.uuid}`
-    //   ); 
-        this.captchaPath = `http://106.14.209.11:8888/auth/captcha.jpg?uuid=${this.dataForm.uuid}`
-    },
-    toSignupPage(){
-      this.$router.push('/signup')
-    },
-    toForgetPage(){
-      this.$router.push('/forget')
+      this.$refs.dataFormRef.validate(async (valid) => {
+        if (!valid) return;
+        const data = await this.$http.post("/user/login", this.dataForm);
+        // console.log(res)
+        if (data.data.status !== 200) {
+          return this.$message.error(data.data.msg);
+        }
+        // console.log(data)
+        window.localStorage.setItem("token", data.headers.authorization);
+        this.$message.success("登录成功");
 
-    }
-  }
+        this.$router.push("/");
+      });
+    },
+
+    toSignupPage() {
+      this.$router.push("/signup");
+    },
+    
+    toForgetPage() {
+      this.$router.push("/forget");
+    },
+  },
 };
 </script>
 
@@ -186,7 +156,7 @@ export default {
     width: 100%;
   }
 }
-.el-link{
-  margin-right: 40px;;
+.el-link {
+  margin-right: 40px;
 }
 </style>

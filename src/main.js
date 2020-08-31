@@ -4,12 +4,15 @@ import router from './router'
 // import './plugins/element.js'
 import axios from "axios"
 import './assets/css/global.css'
+import Vuex from 'vuex'
+import store from './store/store.js'
 
-
+Vue.use(Vuex)
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
-axios.defaults.baseURL = 'http://127.0.0.1:8888'
-// axios.defaults.baseURL = 'http://106.14.209.11:8888'
+// axios.defaults.baseURL = 'http://127.0.0.1:8888'
+// axios.defaults.baseURL = 'http://localhost:11451'
+axios.defaults.baseURL = 'https://www.forestj.top:8889'
 axios.interceptors.request.use(config => {
   config.headers.Authorization = window.localStorage.getItem('token')
   return config
@@ -30,6 +33,7 @@ axios.interceptors.response.use(config => {
 })
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')
 

@@ -2,26 +2,17 @@
   <el-container class="home-container">
     <el-header>
       <div>
-        <span>peing提问箱</span>
+        <span>music</span>
       </div>
       <div class="unlogin" v-if="unLogin">
-        <el-avatar :size="40" shape="square" :src="defaultImageUrl"></el-avatar>
-
-        <el-link type="primary" @click="toLoginPage">登录</el-link>
         <el-link type="primary" @click="toSignupPage">注册</el-link>
+        <el-link type="primary" @click="toLoginPage">登录</el-link>
       </div>
       <div v-else>
-        <el-avatar
-          :size="40"
-          shape="square"
-          :src="'http://106.14.209.11:8888/user/avatar/'+this.userId"
-          :key="'http://106.14.209.11:8888/user/avatar/'+this.userId"
-        ></el-avatar>
         <span style="margin-right:20px">{{currentUser.username}}</span>
-        <el-badge :value="messageNum" class="message" :hidden="!messageNum">
-          <el-link type="primary" class="message" @click="toMessagePage">消息</el-link>
-        </el-badge>
         <el-badge :value="0" class="message" hidden>
+          <el-link type="primary" @click="changePwd" class="logout">修改密码</el-link>
+
           <el-link type="primary" @click="logout" class="logout">退出</el-link>
         </el-badge>
       </div>
@@ -41,97 +32,51 @@
         >
           <el-submenu index="1">
             <template slot="title">
-              <span>提问</span>
+              <span>音乐</span>
             </template>
+
             <el-menu-item index="/random" @click="saveNavState('/random')">
               <template slot="title">
                 <i class="el-icon-menu"></i>
-                <span>随便看看</span>
+                <span>随机推荐</span>
               </template>
             </el-menu-item>
+
             <el-menu-item index="/search" @click="saveNavState('/search')">
               <template slot="title">
                 <i class="el-icon-menu"></i>
-                <span>查询用户</span>
+                <span>搜索歌曲</span>
               </template>
             </el-menu-item>
-          </el-submenu>
 
-          <el-submenu index="2" v-if="role_user">
-            <template slot="title">
-              <span>个人信息</span>
-            </template>
-            <el-menu-item
-              index="/userInfo"
-              @click="saveNavState('/userInfo')"
-              v-if="hasRole('ROLE_USER')"
-            >
+            <el-menu-item index="/song" @click="saveNavState('/song')" v-if="hasRole('ROLE_ADMIN')">
               <template slot="title">
                 <i class="el-icon-menu"></i>
-                <span>查看个人信息</span>
-              </template>
-            </el-menu-item>
-            <el-menu-item
-              index="/questionBox"
-              @click="saveNavState('/questionBox')"
-              v-if="hasRole('ROLE_USER')"
-            >
-              <template slot="title">
-                <i class="el-icon-menu"></i>
-                <span>我的提问箱</span>
+                <span>音乐管理</span>
               </template>
             </el-menu-item>
           </el-submenu>
+          <el-submenu index="2" v-if="hasRole('ROLE_USER')">
+            <template slot="title">
+              <span>歌单</span>
+            </template>
 
-          <el-submenu index="3" v-if="role_admin">
-            <template slot="title">
-              <span>用户管理</span>
-            </template>
-            <el-menu-item index="/AllUser" @click="saveNavState('/AllUser')" v-if="role_admin">
+            <el-menu-item index="/musiclist" @click="saveNavState('/musiclist')">
               <template slot="title">
                 <i class="el-icon-menu"></i>
-                <span>查询用户</span>
-              </template>
-            </el-menu-item>
-            <el-menu-item
-              index="/deleteAdmin"
-              @click="saveNavState('/deleteAdmin')"
-              v-if="role_root"
-            >
-              <template slot="title">
-                <i class="el-icon-menu"></i>
-                <span>删除管理员</span>
+                <span>我的歌单</span>
               </template>
             </el-menu-item>
           </el-submenu>
+          <el-submenu index="3" v-if="hasRole('ROLE_USER')">
+            <template slot="title">
+              <span>收藏</span>
+            </template>
 
-          <el-submenu index="4" v-if="role_admin">
-            <template slot="title">
-              <span>举报中心</span>
-            </template>
-            <el-menu-item
-              index="/reportList"
-              @click="saveNavState('/reportList')"
-              v-if="hasRole('ROLE_ADMIN')"
-            >
+            <el-menu-item index="/collect" @click="saveNavState('/collect')">
               <template slot="title">
                 <i class="el-icon-menu"></i>
-                <span>查看举报列表</span>
-              </template>
-            </el-menu-item>
-          </el-submenu>
-          <el-submenu index="5" v-if="role_admin">
-            <template slot="title">
-              <span>消息系统</span>
-            </template>
-            <el-menu-item
-              index="/publish"
-              @click="saveNavState('/publish')"
-              v-if="hasRole('ROLE_ADMIN')"
-            >
-              <template slot="title">
-                <i class="el-icon-menu"></i>
-                <span>发布公告</span>
+                <span>我的收藏</span>
               </template>
             </el-menu-item>
           </el-submenu>
@@ -141,6 +86,129 @@
         <router-view @changeMessageState="changeMessageState"></router-view>
       </el-main>
     </el-container>
+    <el-footer class="myfooter" style="background-color: #333;">
+      <!-- <el-col :span="3">
+        <el-row>
+          <el-tag size="medium">当前正在播放</el-tag>
+        </el-row>
+        <el-row>
+          <el-tag size="medium" type="warning">{{musics.name}}</el-tag>
+        </el-row>
+      </el-col>
+      <el-col :span="21">
+        <audio
+          :src="this.$store.state.fileUrl+musics.link"
+          controls="controls"
+          style="width:100%"
+          autoplay
+        >1</audio>
+      </el-col>-->
+
+      <el-col :span="2">
+        <el-image
+          :src="this.$store.state.fileUrl+musics.image"
+          :key="this.$store.state.fileUrl+musics.image"
+          style="width: 50px; height: 50px; margin-top: 3px; margin-left: 40px"
+          :fit="fit"
+        >
+          <div slot="error" class="image-slot">
+            <el-image
+              :src="require('../assets/img/音符01.png')"
+              :key="require('../assets/img/音符01.png')"
+              style="width: 50px; height: 50px; margin-left: 15px;cursor:pointer"
+              :fit="fit"
+            ></el-image>
+          </div>
+        </el-image>
+      </el-col>
+      <el-col :span="18">
+        <el-row>
+          <el-link
+            style="color: #e8e8e8; font-size: 12px"
+            @click="toSongPages(musics.id)"
+          >{{musics?musics.name:"暂无歌曲"}}</el-link>
+        </el-row>
+        <audio
+          :src="this.$store.state.fileUrl+musics.link"
+          controls="controls"
+          style="width:100%; height: 23px; margin-top: 5px"
+          autoplay
+          @ended="ends"
+          :loop="isLoop"
+        >1</audio>
+      </el-col>
+      <el-col :span="1">
+        <!-- <el-button>上一首</el-button> -->
+        <el-image
+          :src="require('../assets/img/上一首.png')"
+          :key="require('../assets/img/上一首.png')"
+          style="width: 50px; height: 50px; margin-left: 15px;cursor:pointer"
+          :fit="fit"
+          @click="prevMusic"
+        ></el-image>
+      </el-col>
+      <el-col :span="1">
+        <!-- <el-button>下一首</el-button> -->
+        <el-image
+          :src="require('../assets/img/下一首.png')"
+          :key="require('../assets/img/下一首.png')"
+          style="width: 50px; height: 50px; margin-left: 5px;cursor:pointer"
+          :fit="fit"
+          @click="nextMusic"
+        ></el-image>
+      </el-col>
+      <el-col :span="1">
+        <!-- <el-button>播放模式</el-button> -->
+        <el-image
+          :src="require('../assets/img/循环02.png')"
+          :key="require('../assets/img/循环02.png')"
+          style="width: 50px; height: 50px; margin-left: 5px;cursor:pointer"
+          :fit="fit"
+          v-if="isLoop"
+          @click="changeMethod"
+        ></el-image>
+        <el-image
+          :src="require('../assets/img/循环08.png')"
+          :key="require('../assets/img/循环08.png')"
+          style="width: 50px; height: 50px; margin-left: 5px;cursor:pointer"
+          :fit="fit"
+          v-else
+          @click="changeMethod"
+        ></el-image>
+      </el-col>
+      <el-col :span="1">
+        <!-- <el-button>播放列表</el-button> -->
+
+        <el-popover placement="top-end" width="500" trigger="click" @show="getPlayList">
+          <el-row>
+            <span style="font-size: 14px;font-weight: bold;">播放列表</span>
+            <el-link
+              style="margin-left: 18px; color: #999;font-size: 12px; "
+              @click="clearList"
+            >清空列表</el-link>
+          </el-row>
+          <!-- <el-divider></el-divider> -->
+          <el-table :data="playList">
+            <el-table-column width="400" property="name" label="歌曲名">
+              <template slot-scope="scope">
+                <el-link @click="play(scope.row)">{{scope.row.name}}</el-link>
+              </template>
+            </el-table-column>
+            <el-table-column label="长度" prop="longs">
+              <template slot-scope="scope">{{gettime(scope.row.longs)}}</template>
+            </el-table-column>
+          </el-table>
+          <!-- <el-button>click 激活</el-button> -->
+          <el-image
+            :src="require('../assets/img/音频列表.png')"
+            :key="require('../assets/img/音频列表.png')"
+            style="width: 50px; height: 50px; margin-left: 5px;cursor:pointer"
+            :fit="fit"
+            slot="reference"
+          ></el-image>
+        </el-popover>
+      </el-col>
+    </el-footer>
   </el-container>
 </template>
 
@@ -154,18 +222,25 @@ export default {
       userId: "",
       isCollapse: false,
       activePath: "",
-      defaultImageUrl:
-        "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
       role_user: false,
       role_admin: false,
       role_root: false,
       currentUser: {},
-      messageNum: 0
+      messageNum: 0,
+      musics: {
+      },
+      isLoop: false,
+      playList: [],
     };
   },
   created() {
     this.tryLogin();
   },
+
+  mounted() {
+    this.tryPlay();
+  },
+
   methods: {
     async tryLogin() {
       console.log("try login");
@@ -173,7 +248,7 @@ export default {
       if (!token) this.unLogin = true;
       else {
         this.unLogin = false;
-        const { data: res } = await this.$http.get("/user/info");
+        const { data: res } = await this.$http.get("/user/getRole");
         if (res.status !== 200) {
           window.localStorage.removeItem("token");
           return this.$message.error("登录失效，请重新登录");
@@ -191,15 +266,7 @@ export default {
             this.role_user = true;
         }
         this.currentUser = res.data;
-        this.getUnreadMessage();
       }
-    },
-    async getUnreadMessage() {
-      const { data: res } = await this.$http.get("/message/getNum");
-      if (res.status !== 200) {
-        return this.$message.error("获取未读消息数量失败");
-      }
-      this.messageNum = res.data;
     },
     saveNavState(activePath) {
       window.sessionStorage.setItem("activePath", activePath);
@@ -221,8 +288,10 @@ export default {
       this.role_root = false;
       this.role_admin = false;
       this.role_user = false;
-      location.href = "/";
+      // location.href = "/";
+      this.$router.push("/");
       this.$message.warning("退出成功");
+      this.tryPlay();
     },
     toLoginPage() {
       this.$router.push("/login");
@@ -230,13 +299,80 @@ export default {
     toSignupPage() {
       this.$router.push("/signup");
     },
-    toMessagePage() {
-      this.$router.push("/message");
+    changePwd() {
+      this.$router.push("/changePwd");
     },
-    changeMessageState() {
-      this.getUnreadMessage();
-    }
-  }
+
+    toSongPages(id) {
+      this.$router.push("/songInfo?id=" + id);
+    },
+
+    changeMethod() {
+      this.isLoop = !this.isLoop;
+    },
+
+    ends() {
+      if (!this.isLoop) {
+        this.$store.commit("nextMusic");
+      }
+    },
+
+    getPlayList() {
+      this.playList = this.$store.state.playList;
+    },
+
+    gettime(longs) {
+      let minute = parseInt(longs / 60);
+      var second = longs % 60;
+      return minute + ":" + second;
+    },
+
+    prevMusic() {
+      this.$store.commit("preMusic");
+    },
+
+    nextMusic() {
+      this.$store.commit("nextMusic");
+    },
+
+    async clearList() {
+      const confirmResult = await this.$confirm("是否清空播放列表", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).catch((err) => err);
+      if (confirmResult !== "confirm") {
+        return;
+      }
+      (this.playList = []), (this.musics = {}), this.$store.commit("clearList");
+      this.$message.warning("清空播放列表成功");
+    },
+
+    play(data) {
+      this.$store.commit("changeMusic", data);
+    },
+
+    tryPlay() {
+      this.$store.commit("tryPlay1");
+      this.$store.commit("tryPlay2");
+    },
+  },
+
+  computed: {
+    musicChanges() {
+      return this.$store.state.music;
+    },
+  },
+
+  watch: {
+    // 监视todoListModule.todos，当发生变化时将todos重新写入本地存储
+    musicChanges: {
+      deep: true,
+      handler(value) {
+        this.musics = value;
+      },
+    },
+  },
 };
 </script>
 
