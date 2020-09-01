@@ -56,11 +56,16 @@
               </template>
             </el-menu-item>
           </el-submenu>
-          <el-submenu index="2" v-if="hasRole('ROLE_USER')">
+          <el-submenu index="2">
             <template slot="title">
               <span>歌单</span>
             </template>
-
+            <el-menu-item index="/searchList" @click="saveNavState('/searchList')">
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>搜索歌单</span>
+              </template>
+            </el-menu-item>
             <el-menu-item index="/musiclist" @click="saveNavState('/musiclist')">
               <template slot="title">
                 <i class="el-icon-menu"></i>

@@ -23,6 +23,7 @@ import Random from '../components/song/Random.vue'
 import Collect from '../components/collect/Collect.vue'
 import MusicList from '../components/musiclist/Musiclist.vue'
 import MusicListInfo from '../components/musiclist/MusicListInfo.vue'
+import SearchList from'../components/musiclist/SearchList.vue'
 
 Vue.use(VueRouter)
 
@@ -81,6 +82,10 @@ const routes = [{
       {
         path: '/musiclistInfo',
         component: MusicListInfo
+      },
+      {
+        path: '/searchList',
+        component: SearchList
       }
     ]
   },

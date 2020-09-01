@@ -11,8 +11,8 @@ Vue.use(Vuex)
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
 // axios.defaults.baseURL = 'http://127.0.0.1:8888'
-// axios.defaults.baseURL = 'http://localhost:11451'
-axios.defaults.baseURL = 'https://www.forestj.top:8889'
+axios.defaults.baseURL = 'http://localhost:11451'
+// axios.defaults.baseURL = 'https://www.forestj.top:8889'
 axios.interceptors.request.use(config => {
   config.headers.Authorization = window.localStorage.getItem('token')
   return config

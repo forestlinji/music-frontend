@@ -10,15 +10,28 @@
         <el-tag :size="medium" style="margin-right: 15px; font-size: 14px">歌单</el-tag>
         <span style="font-size: 25px">{{musiclist.name}}</span>
       </el-row>
-      <el-row style="margin-top: 10px">
+      <el-row style="margin-top: 14px">
+        <el-link type="primary" style="margin-right: 10px">{{musiclist.owner}}</el-link>
         <span style="color: #999;font-size: 13px;">{{formatDate(musiclist.createTime)}}创建</span>
         <el-link
           type="danger"
           style="font-size: 15px;margin-left: 50px; margin-bottom: 3px"
           @click="deleteList()"
+          v-if="isMy"
         >删除歌单</el-link>
       </el-row>
-      <el-row style="margin-top: 30px; font-size: 20px;">
+      <el-row style="margin-top: 15px;">
+        <span style="font-size: 14px;">歌单状态</span>
+        <el-switch
+          v-model="isPublic"
+          active-text="公开"
+          inactive-text="私密"
+          style="margin-left: 30px"
+          @change="changeState()"
+          :disabled="!isMy"
+        ></el-switch>
+      </el-row>
+      <el-row style="margin-top: 35px; font-size: 20px;">
         <span>歌曲列表</span>
         <span style="margin: 9px 0 0 20px;color: #666;font-size: 13px;">{{musiclist.num}}首</span>
         <el-button type="primary" style="margin-left: 30px" size="small" @click="playAll">播放全部</el-button>
@@ -39,7 +52,7 @@
           <template slot-scope="scope">
             <el-button type="success" size="mini" @click="play(scope.row)">播放</el-button>
             <el-button type="success" size="mini" @click="addList(scope.row)">加入播放列表</el-button>
-            <el-button type="warning" size="mini" @click="deleteMusic(scope.row.id)">移出歌单</el-button>
+            <el-button type="warning" size="mini" @click="deleteMusic(scope.row.id)" v-if="isMy">移出歌单</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -55,6 +68,8 @@ export default {
     return {
       musiclist: {},
       songList: [],
+      isMy: false,
+      isPublic: false,
     };
   },
 
@@ -69,6 +84,11 @@ export default {
     }
     this.musiclist = res.data;
     this.getList();
+    this.isPublic = this.musiclist.open;
+    const user = JSON.parse(window.sessionStorage.getItem("user"));
+    if(user && this.musiclist.ownerId === user.userId){
+      this.isMy = true;
+    }
   },
 
   methods: {
@@ -146,6 +166,21 @@ export default {
 
     toSongPage(id) {
       this.$router.push("/songInfo?id=" + id);
+    },
+
+    async changeState(value) {
+      const { data: res } = await this.$http.get("/musiclist/changeState", {
+        params: {
+          id: this.musiclist.id,
+          open: this.isPublic
+        },
+      });
+      if (res.status !== 200) {
+        return this.$message.error("更改歌单状态失败");
+      }
+      else{
+        return this.$message.success("更改歌单状态成功");
+      }
     },
   },
 };

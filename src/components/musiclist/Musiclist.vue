@@ -2,8 +2,8 @@
   <div>
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>音乐</el-breadcrumb-item>
-      <el-breadcrumb-item>搜索</el-breadcrumb-item>
+      <el-breadcrumb-item>歌单</el-breadcrumb-item>
+      <el-breadcrumb-item>我的歌单</el-breadcrumb-item>
     </el-breadcrumb>
     <el-card>
       <el-row>
@@ -29,7 +29,8 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="success" size="mini" @click="deleteList(scope.row.id)">删除歌单</el-button>
+            <el-button type="success" size="mini" @click="playAll(scope.row.id)">播放全部</el-button>
+            <el-button type="danger" size="mini" @click="deleteList(scope.row.id)">删除歌单</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -181,10 +182,24 @@ export default {
       });
       if (res.status !== 200) {
         return this.$message.error("删除歌单失败");
-      }else{
-          this.$message.warning("删除歌单成功");
-          this.getMusicList();
+      } else {
+        this.$message.warning("删除歌单成功");
+        this.getMusicList();
       }
+    },
+
+    async playAll(id) {
+      const { data: res } = await this.$http.get("/musiclist/getList", {
+        params: {
+          id: id,
+        },
+      });
+      if (res.status !== 200) {
+        return this.$message.error("获取歌曲失败");
+      }
+
+      this.$store.commit("changeList", res.data);
+
     },
   },
 };
